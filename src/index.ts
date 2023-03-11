@@ -37,7 +37,9 @@ const retryableFn: RetryableFn = <T>(
   ifFn: IfFn<T> = defaultIfFn,
   backoffFn = defaultBackoffFn,
 ) => {
-  if (limit < 0) throw new Error('limit must be greater than 0') // TODO: write test case
+  // TODO: Custom Error
+  // TODO: Write Test Case
+  if (limit < 0) throw new Error('limit must be greater than 0')
 
   const run: Run<T> = async (count = 0): Promise<T> => {
     const result = await fn()
@@ -49,7 +51,9 @@ const retryableFn: RetryableFn = <T>(
     if (!ifFn(result)) return result
 
     const backoff = backoffFn(count)
-    if (backoff < 0) throw new Error('backoff must be greater than 0') // TODO: write test case
+    // TODO: Custom Error
+    // TODO: Write Test Case
+    if (backoff < 0) throw new Error('backoff must be greater than 0')
     if (backoff > 0) {
       await new Promise(resolve => setTimeout(resolve, backoff))
     }

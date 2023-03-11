@@ -29,6 +29,7 @@ const AsyncCounter = (initialCounter = 0) => {
   }
 }
 
+
 describe('retryable', () => {
   describe('with synchronous function', () => {
     describe('run', () => {
@@ -41,6 +42,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
+        // 型を推論可能にしたい
         const result = await retryable<number>(3, fn).run()
 
         expect(result).toBe(3)

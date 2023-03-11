@@ -1,4 +1,4 @@
-import { retryableFn } from '.'
+import { retryable } from '.'
 
 
 const Counter = (initialCounter = 0) => {
@@ -41,7 +41,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryableFn<number>(3, fn).run()
+        const result = await retryable<number>(3, fn).run()
 
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -58,7 +58,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryableFn(10, fn).if(n => n < 3).run()
+        const result = await retryable(10, fn).if(n => n < 3).run()
 
         expect(result).toEqual(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -75,7 +75,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryableFn(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
+        const result = await retryable(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toEqual(5)
         expect(mockFn).toHaveBeenCalledTimes(5)
@@ -92,7 +92,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryableFn(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
+        const result = await retryable(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toEqual(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -111,7 +111,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryableFn<number>(3, fn).run()
+        const result = await retryable<number>(3, fn).run()
 
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -128,7 +128,7 @@ describe('retryable', () => {
           return await counter.increment()
         }
 
-        const result = await retryableFn<number>(3, fn).if(n => n < 3).run()
+        const result = await retryable<number>(3, fn).if(n => n < 3).run()
         
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)

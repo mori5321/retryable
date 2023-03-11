@@ -1,9 +1,11 @@
+type Retryable = <T>(limit: number, fn: () => T | Promise<T>) => RetryableReturn<T>;
 
-type Run<T> = (count?: number) => Promise<T>;
-type If<T> = (condition: (result: T) => boolean) => RetryableReturn<T>;
-type Backoff<T> = (backoffFn: (count: number) => number) => RetryableReturn<T>;
-
-type RetryableFn = <T>(limit: number, fn: () => T | Promise<T>, ifFn?: (result: T) => boolean, backoffFn?: (count: number) => number) => RetryableReturn<T>
+export const retryable: Retryable = <T>(
+  limit: number,
+  fn: () => T | Promise<T>
+) => {
+  return retryableFn(limit, fn, undefined, undefined)
+}
 
 type RetryableReturn<T> = {
   run: Run<T>,
@@ -11,18 +13,26 @@ type RetryableReturn<T> = {
   backoff: Backoff<T>,
 }
 
+type Run<T> = (count?: number) => Promise<T>;
 
-// Interface
-// retryable(3, fn).run()
-// retryable(3, fn).if((result -> result === 'foo'))
-// retryable(3, fn).backoff(count => count * 10).run()
-// retryable(3, fn).if((result) => result === 'foo').backoff(3000).run()
-// retryable(3, fn).if((result) => result === 'foo').backoff((count) => count * 10).run()
-export const retryableFn: RetryableFn = <T>(
+type IfFn<T> = (result: T) => boolean;
+type BackoffFn =  (count: number) => number;
+
+type If<T> = (ifFn: IfFn<T>) => RetryableReturn<T>;
+type Backoff<T> = (backoffFn: BackoffFn) => RetryableReturn<T>;
+
+type RetryableFn = <T>(
   limit: number,
   fn: () => T | Promise<T>,
-  ifFn?: (result: T) => boolean,
-  backoffFn?: (count: number) => number,
+  ifFn?: IfFn<T>,
+  backoffFn?: BackoffFn
+) => RetryableReturn<T>
+
+const retryableFn: RetryableFn = <T>(
+  limit: number,
+  fn: () => T | Promise<T>,
+  ifFn: IfFn<T> | undefined,
+  backoffFn: BackoffFn | undefined,
 ) => {
   const run: Run<T> = async (count = 0): Promise<T> => {
     const _result = fn()

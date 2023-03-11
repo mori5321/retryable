@@ -28,33 +28,29 @@ type RetryableFn = <T>(
   backoffFn?: BackoffFn
 ) => RetryableReturn<T>
 
+const defaultIfFn = <T>(_result: T) => true
+const defaultBackoffFn: BackoffFn  = (_count) => 0
+
 const retryableFn: RetryableFn = <T>(
   limit: number,
   fn: () => T | Promise<T>,
-  ifFn: IfFn<T> | undefined,
-  backoffFn: BackoffFn | undefined,
+  ifFn: IfFn<T> = defaultIfFn,
+  backoffFn = defaultBackoffFn,
 ) => {
-  const run: Run<T> = async (count = 0): Promise<T> => {
-    const _result = fn()
-    let result: T
+  if (limit < 0) throw new Error('limit must be greater than 0') // TODO: write test case
 
-    if (_result instanceof Promise) {
-      result = await _result
-    } else {
-      result = _result
-    }
+  const run: Run<T> = async (count = 0): Promise<T> => {
+    const result = await fn()
 
     if (count == limit - 1) {
       return result
     }
 
-    if (ifFn) {
-      const b = ifFn(result)
-      if (!b) return result
-    }
+    if (!ifFn(result)) return result
 
-    if (backoffFn) {
-      const backoff = backoffFn(count)
+    const backoff = backoffFn(count)
+    if (backoff < 0) throw new Error('backoff must be greater than 0') // TODO: write test case
+    if (backoff > 0) {
       await new Promise(resolve => setTimeout(resolve, backoff))
     }
 

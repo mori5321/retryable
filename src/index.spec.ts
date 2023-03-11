@@ -9,6 +9,7 @@ const Counter = (initialCounter = 0) => {
       count += 1
       return count
     },
+    get: () => count
   }
 }
 
@@ -23,7 +24,6 @@ const AsyncCounter = (initialCounter = 0) => {
       })
 
       const _count = await promise
-      console.log('count', count)
       return _count
     }
   }
@@ -59,6 +59,40 @@ describe('retryable', () => {
         }
 
         const result = await retryableFn(10, fn).if(n => n < 3).run()
+
+        expect(result).toEqual(3)
+        expect(mockFn).toHaveBeenCalledTimes(3)
+      })
+    })
+
+    describe('backoff', () => {
+      it('should retry the function with backoff', async () => {
+        const counter = Counter()
+        const mockFn = jest.fn()
+
+        const fn = (): number => {
+          mockFn()
+          return counter.increment()
+        }
+
+        const result = await retryableFn(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
+
+        expect(result).toEqual(5)
+        expect(mockFn).toHaveBeenCalledTimes(5)
+      })
+    })
+
+    describe('if & backoff', () => {
+      it('should retry the function with backoff', async () => {
+        const counter = Counter()
+        const mockFn = jest.fn()
+
+        const fn = (): number => {
+          mockFn()
+          return counter.increment()
+        }
+
+        const result = await retryableFn(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toEqual(3)
         expect(mockFn).toHaveBeenCalledTimes(3)

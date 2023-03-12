@@ -27,8 +27,8 @@ const fetchWithRetry = async (url: string) => {
 ```
 
 If you want to customize backoff, you can:
-```
-import { retryee, exponentialBackoff } from '@mori5321/retryee'
+```typescript
+import { retryee, exponentialBackoff } from 'retryee'
 
 // retry 3 times with backoff(count * 100), that is 0ms -> 2000ms -> 4000ms -> 6000ms -> 8000ms
 const fetchWithRetry = async (url: string) => {

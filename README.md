@@ -1,4 +1,4 @@
-# @mori5321/retryee
+# retryee
 `retryee` is a flexible library for Node.js that enables evelopers to easily add retry logic to their code.
 With `retryee`, you can specify how many times to retry, how long to wait between retries, and what errors to catch in a customizable way. 
 

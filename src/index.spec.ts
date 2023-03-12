@@ -1,4 +1,4 @@
-import { retryable } from '.'
+import { BackoffOutOfRangeError, exponentialBackoff, retryable, RetryLimitOutOfRangeError } from '.'
 
 
 const Counter = (initialCounter = 0) => {
@@ -100,6 +100,42 @@ describe('retryable', () => {
         expect(mockFn).toHaveBeenCalledTimes(3)
       })
     })
+
+    describe('When limit is set negative number', () => {
+      it('throws RetryLimitOutOfRangeError', async () => {
+        const counter = Counter()
+        const mockFn = jest.fn()
+
+        const fn = (): number => {
+          mockFn()
+          return counter.increment()
+        }
+
+        expect(() => retryable(-1, fn)).toThrowError(RetryLimitOutOfRangeError) 
+        expect(counter.get()).toBe(0)
+        expect(mockFn).toHaveBeenCalledTimes(0)
+      })
+    })
+
+    describe('When backoffFn returns set negative number', () => {
+      it('throws RetryLimitOutOfRangeError', async () => {
+        const counter = Counter()
+        const mockFn = jest.fn()
+
+        const fn = (): number => {
+          mockFn()
+          return counter.increment()
+        }
+
+        expect(() =>
+          retryable(5, fn)
+            .backoff((count) => (Math.pow(2, count + 1) * -10) - 1)
+            .run()
+        ).rejects.toThrowError(BackoffOutOfRangeError)
+        expect(counter.get()).toBe(0)
+        expect(mockFn).toHaveBeenCalledTimes(0)
+      })
+    })
   })
   
   describe('with asynchronous function', () => {
@@ -152,6 +188,24 @@ describe('retryable', () => {
         expect(result).toBe(5)
         expect(mockFn).toHaveBeenCalledTimes(5)
       })
+    })
+
+    describe('exponential backoff', () => {
+      it('should retry the function with backoff', async () => {
+        const counter = AsyncCounter()
+        const mockFn = jest.fn()
+
+        const fn = async () => {
+          mockFn()
+          return await counter.increment()
+        }
+
+        const result = await retryable<number>(5, fn).backoff(exponentialBackoff(10)).run()
+
+        expect(result).toBe(5)
+        expect(mockFn).toHaveBeenCalledTimes(5)
+      })
+
     })
 
     describe('if & backoff', () => {

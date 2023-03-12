@@ -7,6 +7,8 @@ export const retryable: Retryable = <T>(
   return retryableFn(limit, fn, undefined, undefined)
 }
 
+export const exponentialBackoff = (base: number) => (count: number) => Math.pow(2, count + 1) * base
+
 type RetryableReturn<T> = {
   run: Run<T>,
   if: If<T>,
@@ -37,23 +39,20 @@ const retryableFn: RetryableFn = <T>(
   ifFn: IfFn<T> = defaultIfFn,
   backoffFn = defaultBackoffFn,
 ) => {
-  // TODO: Custom Error
-  // TODO: Write Test Case
-  if (limit < 0) throw new Error('limit must be greater than 0')
+  if (limit < 0) throw new RetryLimitOutOfRangeError()
 
   const run: Run<T> = async (count = 0): Promise<T> => {
+    const backoff = backoffFn(count)
+    if (backoff < 0) throw new BackoffOutOfRangeError()
+    
     const result = await fn()
-
+    
     if (count == limit - 1) {
       return result
     }
 
     if (!ifFn(result)) return result
 
-    const backoff = backoffFn(count)
-    // TODO: Custom Error
-    // TODO: Write Test Case
-    if (backoff < 0) throw new Error('backoff must be greater than 0')
     if (backoff > 0) {
       await new Promise(resolve => setTimeout(resolve, backoff))
     }
@@ -74,4 +73,54 @@ const retryableFn: RetryableFn = <T>(
     if: iif,
     backoff
   }
+}
+
+
+type ErrorMap = {
+  [key: string]: {
+    name: string,
+    code: string,
+    message: string,
+  }
+}
+
+const errorMap: ErrorMap = {
+  RetryLimitOutOfRangeError: {
+    name: 'RetryLimitOutOfRangeError',
+    code: 'rt-001',
+    message: 'Retry limit must be greater than 0',
+  },
+  BackoffOutOfRangeError: {
+    name: 'BackoffOutOfRangeError',
+    code: 'rt-002',
+    message: 'Backoff must be greater than 0',
+  }
+}
+
+export class RetryLimitOutOfRangeError extends Error {
+  private readonly _code: string
+
+  constructor() {
+    super()
+    const error = errorMap.RetryLimitOutOfRangeError
+    this.name = error.name
+    this._code = error.code
+    this.message = error.message
+  }
+
+  code = (): string => this._code
+}
+
+export class BackoffOutOfRangeError extends Error {
+  private readonly _code: string
+
+  constructor() {
+    super()
+    const error = errorMap.BackoffOutOfRangeError
+    this.name = error.name
+    this._code = error.code
+    this.message = error.message
+  }
+  
+  code = (): string => this._code
 }

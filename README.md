@@ -37,4 +37,5 @@ const fetchWithRetry = async (url: string) => {
     .if((result) => result.status >= 500)
     .backoff((count) => count * 2000)
     .run()
+}
 ```

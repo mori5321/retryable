@@ -30,7 +30,8 @@ If you want to customize backoff, you can:
 ```typescript
 import { retryee, exponentialBackoff } from 'retryee'
 
-// retry 3 times with backoff(count * 100), that is 0ms -> 2000ms -> 4000ms -> 6000ms -> 8000ms
+// retry 5 times
+// with custom backoff(count * 100, that is 0ms -> 2000ms -> 4000ms -> 6000ms -> 8000ms)
 const fetchWithRetry = async (url: string) => {
   return await retryee(5, () => fetch(url))
     .if((result) => result.status >= 500)

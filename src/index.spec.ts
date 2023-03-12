@@ -1,4 +1,4 @@
-import { BackoffOutOfRangeError, exponentialBackoff, retryable, RetryLimitOutOfRangeError } from '.'
+import { BackoffOutOfRangeError, exponentialBackoff, retryee, RetryLimitOutOfRangeError } from '.'
 
 
 const Counter = (initialCounter = 0) => {
@@ -30,7 +30,7 @@ const AsyncCounter = (initialCounter = 0) => {
 }
 
 
-describe('retryable', () => {
+describe('retryee', () => {
   describe('with synchronous function', () => {
     describe('run', () => {
       it('should retry the function until it succeeds', async () => {
@@ -43,7 +43,7 @@ describe('retryable', () => {
         }
 
         // 型を推論可能にしたい
-        const result = await retryable<number>(3, fn).run()
+        const result = await retryee<number>(3, fn).run()
 
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -60,7 +60,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryable(10, fn).if(n => n < 3).run()
+        const result = await retryee(10, fn).if(n => n < 3).run()
 
         expect(result).toEqual(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -77,7 +77,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryable(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
+        const result = await retryee(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toEqual(5)
         expect(mockFn).toHaveBeenCalledTimes(5)
@@ -94,7 +94,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryable(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
+        const result = await retryee(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toEqual(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -111,7 +111,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        expect(() => retryable(-1, fn)).toThrowError(RetryLimitOutOfRangeError) 
+        expect(() => retryee(-1, fn)).toThrowError(RetryLimitOutOfRangeError) 
         expect(counter.get()).toBe(0)
         expect(mockFn).toHaveBeenCalledTimes(0)
       })
@@ -128,7 +128,7 @@ describe('retryable', () => {
         }
 
         expect(() =>
-          retryable(5, fn)
+          retryee(5, fn)
             .backoff((count) => (Math.pow(2, count + 1) * -10) - 1)
             .run()
         ).rejects.toThrowError(BackoffOutOfRangeError)
@@ -149,7 +149,7 @@ describe('retryable', () => {
           return counter.increment()
         }
 
-        const result = await retryable<number>(3, fn).run()
+        const result = await retryee<number>(3, fn).run()
 
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -166,7 +166,7 @@ describe('retryable', () => {
           return await counter.increment()
         }
 
-        const result = await retryable<number>(3, fn).if(n => n < 3).run()
+        const result = await retryee<number>(3, fn).if(n => n < 3).run()
         
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -183,7 +183,7 @@ describe('retryable', () => {
           return await counter.increment()
         }
 
-        const result = await retryable<number>(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
+        const result = await retryee<number>(5, fn).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toBe(5)
         expect(mockFn).toHaveBeenCalledTimes(5)
@@ -200,7 +200,7 @@ describe('retryable', () => {
           return await counter.increment()
         }
 
-        const result = await retryable<number>(5, fn).backoff(exponentialBackoff(10)).run()
+        const result = await retryee<number>(5, fn).backoff(exponentialBackoff(10)).run()
 
         expect(result).toBe(5)
         expect(mockFn).toHaveBeenCalledTimes(5)
@@ -218,7 +218,7 @@ describe('retryable', () => {
           return await counter.increment()
         }
 
-        const result = await retryable<number>(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
+        const result = await retryee<number>(5, fn).if(result => result < 3).backoff(count => Math.pow(2, count + 1) * 10).run()
 
         expect(result).toBe(3)
         expect(mockFn).toHaveBeenCalledTimes(3)
@@ -260,7 +260,7 @@ describe('retryable', () => {
         }
       }
 
-      const result = await retryable<number | Error>(10, fn).if(val => {
+      const result = await retryee<number | Error>(10, fn).if(val => {
         if (val instanceof Error) return true
         return false
       }).run()
@@ -303,7 +303,7 @@ describe('retryable', () => {
         }
       }
 
-      const result = await retryable<number | Error>(10, fn).if(val => {
+      const result = await retryee<number | Error>(10, fn).if(val => {
         if (val instanceof Error) return true
         if (val === 9) return false
         return true

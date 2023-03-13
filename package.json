@@ -12,9 +12,23 @@
     "build:types": "tsc",
     "test": "npx jest"
   },
-  "keywords": [],
-  "author": "",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "retry",
+    "retryable",
+    "retryee",
+    "exponential backoff",
+    "typescript"
+  ],
+  "author": "mori5321",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mori5321/retryee.git"
+  },
+  "homepage": "https://github.com/mori5321/retryee#readme",
   "devDependencies": {
     "@types/jest": "^29.2.4",
     "@types/node": "^18.11.18",

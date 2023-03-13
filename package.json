@@ -1,10 +1,10 @@
 {
   "name": "retryee",
-  "version": "0.0.0",
+  "version": "0.0.2", 
   "description": "",
   "main": "dist/index.cjs.js",
   "module": "dist/index.mjs.js",
-  "types": "lib/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "npm run build",
     "build": "npm-run-all build:esbuild build:types",
@@ -13,7 +13,9 @@
     "test": "npx jest"
   },
   "files": [
-    "dist"
+    "dist/index.cjs.js",
+    "dist/index.mjs.js",
+    "dist/index.d.ts"
   ],
   "keywords": [
     "retry",

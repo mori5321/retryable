@@ -10,6 +10,7 @@
     "build": "npm-run-all build:esbuild build:types",
     "build:esbuild": "npx ts-node --project tsconfig.build.json scripts/build.mts",
     "build:types": "tsc",
+    "commit": "npx git-cz",
     "test": "npx jest"
   },
   "files": [

@@ -31,6 +31,11 @@
     "type": "git",
     "url": "git+https://github.com/mori5321/retryee.git"
   },
+  "config": {
+    "commitizen": {
+      "path": "git-cz"
+    }
+  },
   "homepage": "https://github.com/mori5321/retryee#readme",
   "devDependencies": {
     "@types/jest": "^29.2.4",

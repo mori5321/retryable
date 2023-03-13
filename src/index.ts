@@ -1,6 +1,11 @@
-type Retryee = <T>(limit: number, fn: () => T | Promise<T>) => RetryeeReturn<T>;
 
-export const retryee: Retryee = <T>(
+type Retryee<T> = {
+  run: Run<T>,
+  if: If<T>,
+  backoff: Backoff<T>,
+}
+
+export const retryee = <T>(
   limit: number,
   fn: () => T | Promise<T>
 ) => {
@@ -10,26 +15,20 @@ export const retryee: Retryee = <T>(
 export const exponentialBackoff = (base: number) => (count: number) => Math.pow(2, count + 1) * base
 
 
-type RetryeeReturn<T> = {
-  run: Run<T>,
-  if: If<T>,
-  backoff: Backoff<T>,
-}
-
 type Run<T> = (count?: number) => Promise<T>;
 
 type IfFn<T> = (result: T) => boolean;
 type BackoffFn =  (count: number) => number;
 
-type If<T> = (ifFn: IfFn<T>) => RetryeeReturn<T>;
-type Backoff<T> = (backoffFn: BackoffFn) => RetryeeReturn<T>;
+type If<T> = (ifFn: IfFn<T>) => Retryee<T>;
+type Backoff<T> = (backoffFn: BackoffFn) => Retryee<T>;
 
 type RetryeeFn = <T>(
   limit: number,
   fn: () => T | Promise<T>,
   ifFn?: IfFn<T>,
   backoffFn?: BackoffFn
-) => RetryeeReturn<T>
+) => Retryee<T>
 
 const defaultIfFn = <T>(_result: T) => true
 const defaultBackoffFn: BackoffFn  = (_count) => 0

@@ -1,6 +1,9 @@
+This library is still in alpha(0.0.x) version. Please consider when you use it in production. 
+
 # retryee
-`retryee` is a flexible library for Node.js that enables evelopers to easily add retry logic to their code.
-With `retryee`, you can specify how many times to retry, how long to wait between retries, and what errors to catch in a customizable way. 
+`retryee` is a programmable library for retry. 
+This is written in TypeScript. It enables developers to customize retry & backoff in a simple way.
+With `retryee`, you can specify how many times to retry, how long to wait between retries, and what errors to catch in a programable way. 
 
 ## Installation
 To install `retryee`, run:
@@ -44,7 +47,7 @@ const fetchWithRetry = async (url: string) => {
 
 ### Catch Exception
 If you want to catch exception, you can write code like this:
-```
+``` typescript
 // - retry if it throws error OR response returns 5xx Error.
 const fetchWithRetry = async (url: string) => {
   return await retryee(5, async () => {

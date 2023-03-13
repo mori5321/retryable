@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.4](https://github.com/mori5321/retryee/compare/v0.0.3...v0.0.4) (2023-03-13)
+
+
+### Features
+
+* 🎸 add command `npm run commit` ([0472579](https://github.com/mori5321/retryee/commit/04725799b2680f0d6ae79eab0b8df545ffb76bce))
+
 ### 0.0.3 (2023-03-13)
 
 

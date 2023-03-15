@@ -43,6 +43,13 @@ const fetchWithRetry = async (url: string) => {
     .backoff((count) => count * 2000)
     .run()
 }
+
+const fetchWithRetry = async (url: string) => {
+  return await retryee(5, () => fetch(url))
+    .if((result) => result.status >= 500)
+    .backoff((count) => count * 2000)
+    .run()
+}
 ```
 
 ### Catch Exception
@@ -55,7 +62,9 @@ const fetchWithRetry = async (url: string) => {
       const result = await fetch(url)
       return result;
     } catch (e) {
-      throw new Error(e)
+      if (e instanceof Error) return e
+      if (typeof e === 'string') return new Error(e)
+      return new Error(`Unknown Error: ${e}`)
     }
   )
   .if((result) => {

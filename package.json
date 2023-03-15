@@ -18,7 +18,7 @@
   },
   "files": [
     "dist/index.cjs.js",
-    "dist/index.mjs.js",
+    "dist/index.esm.js",
     "dist/index.d.ts"
   ],
   "keywords": [

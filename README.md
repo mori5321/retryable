@@ -1,5 +1,3 @@
-This library is still in alpha(0.0.x) version. Please consider when you use it in production. 
-
 # retryee
 `retryee` is a programmable library for retry. 
 This is written in TypeScript. It enables developers to customize retry & backoff in a simple way.
